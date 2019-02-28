@@ -6,14 +6,29 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using BlogDemo.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace BlogDemo.api
 {
     public class StartupDevelopment
     {
+        private static IConfiguration Configuration { get; set; }
+
+        public StartupDevelopment(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddDbContext<MyContext>(options => {
+                var connectionString= Configuration.GetConnectionString("DefaultConnection");
+                options.UseSqlServer(connectionString);
+                }
+            );
             services.AddHttpsRedirection(options =>
             {
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
