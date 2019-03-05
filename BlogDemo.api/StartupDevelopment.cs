@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using BlogDemo.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using BlogDemo.Core.Interfaces;
+using BlogDemo.Infrastructure.Repositories;
 
 namespace BlogDemo.api
 {
@@ -34,6 +36,7 @@ namespace BlogDemo.api
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
                 options.HttpsPort = 5001;
             });
+            services.AddScoped<IPostRepository, PostRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
