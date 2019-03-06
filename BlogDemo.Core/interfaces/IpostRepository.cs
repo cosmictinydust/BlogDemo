@@ -7,5 +7,6 @@ namespace BlogDemo.Core.Interfaces
     public interface IPostRepository
     {
        Task<IEnumerable<Post>> GetAllPostsAsync();
+        void AddPost(Post post);
     }
 }

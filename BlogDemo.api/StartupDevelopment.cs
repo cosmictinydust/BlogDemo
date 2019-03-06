@@ -37,6 +37,7 @@ namespace BlogDemo.api
                 options.HttpsPort = 5001;
             });
             services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

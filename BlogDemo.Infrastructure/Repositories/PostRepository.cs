@@ -20,5 +20,10 @@ namespace BlogDemo.Infrastructure.Repositories
         {
             return await _myContext.Posts.ToArrayAsync();
         }
+        
+        public void AddPost(Post post)
+        {
+            _myContext.Posts.Add(post);
+        }
     }
 }
