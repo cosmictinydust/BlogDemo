@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using BlogDemo.Core.Interfaces;
 using BlogDemo.Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
+using BlogDemo.api.Extensions;
 
 namespace BlogDemo.api
 {
@@ -41,9 +43,12 @@ namespace BlogDemo.api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app,ILoggerFactory loggerFactory)
         {
-            app.UseDeveloperExceptionPage();
+            //app.UseDeveloperExceptionPage();
+            //上面这个适用于MVC,但API不合适
+            app.UseMyExceptionHandler(loggerFactory);
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }

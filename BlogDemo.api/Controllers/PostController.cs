@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BlogDemo.Core.Interfaces;
 using BlogDemo.Infrastructure.Repositories;
 using BlogDemo.Core.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace BlogDemo.api.Controllers
 {
@@ -16,16 +17,20 @@ namespace BlogDemo.api.Controllers
     {
         private readonly IPostRepository _postRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<PostController> _logger;
 
-        public PostController(IPostRepository postRepository,IUnitOfWork unitOfWork)
+        public PostController(IPostRepository postRepository,IUnitOfWork unitOfWork,ILogger<PostController> logger)
         {
             _postRepository = postRepository;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var posts = await _postRepository.GetAllPostsAsync();
+            //_logger.LogError("这里是 Get all posts...");
+            throw new Exception("Error........!!!!!");
             return Ok(posts);
         }
 
