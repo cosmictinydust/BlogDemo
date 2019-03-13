@@ -13,6 +13,9 @@ using BlogDemo.Core.Interfaces;
 using BlogDemo.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using BlogDemo.api.Extensions;
+using AutoMapper;
+using FluentValidation;
+using BlogDemo.Infrastructure.Resource;
 
 namespace BlogDemo.api
 {
@@ -40,6 +43,9 @@ namespace BlogDemo.api
             });
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddAutoMapper();
+            services.AddTransient<IValidator<PostResource>, PostResourceValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
