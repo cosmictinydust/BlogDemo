@@ -16,6 +16,7 @@ using BlogDemo.api.Extensions;
 using AutoMapper;
 using FluentValidation;
 using BlogDemo.Infrastructure.Resource;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace BlogDemo.api
 {
@@ -30,7 +31,13 @@ namespace BlogDemo.api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc(
+                options =>
+                {
+                    options.ReturnHttpNotAcceptable = true;
+                    options.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+                }
+                );
             services.AddDbContext<MyContext>(options => {
                 var connectionString= Configuration.GetConnectionString("DefaultConnection");
                 options.UseSqlServer(connectionString);

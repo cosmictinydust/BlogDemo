@@ -6,6 +6,7 @@ using BlogDemo.Core.Entities;
 using BlogDemo.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace BlogDemo.Infrastructure.Repositories
 {
@@ -16,10 +17,15 @@ namespace BlogDemo.Infrastructure.Repositories
         {
             _myContext = myContext;
         }
-        public async Task<IEnumerable<Post>> GetAllPostsAsync()
+        public async Task<IEnumerable<Post>> GetAllPostsAsync(PostParameters postParameters)
         {
-            return await _myContext.Posts.ToArrayAsync();
+            var query = _myContext.Posts.OrderBy(x => x.Id);
+            return await query
+                .Skip(postParameters.PageIndex * postParameters.PageSize)
+                .Take(postParameters.PageSize)
+                .ToListAsync();
         }
+    
 
         public async Task<Post> GetPostByIdAsync(int id)
         {

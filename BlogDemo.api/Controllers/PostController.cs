@@ -32,9 +32,10 @@ namespace BlogDemo.api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(PostParameters postParameters)
         {
-            var posts = await _postRepository.GetAllPostsAsync();
+            var posts = await _postRepository.GetAllPostsAsync(postParameters);
+
             //_logger.LogError("这里是 Get all posts...");
             //throw new Exception("Error........!!!!!");
             var postResources = _mapper.Map<IEnumerable<Post>, IEnumerable<PostResource>>(posts);
@@ -49,8 +50,8 @@ namespace BlogDemo.api.Controllers
             {
                 return NotFound();
             }
-            var postResource=_mapper.Map<Post,PostResource> (post);
-            return Ok(postResource);
+            var postResources=_mapper.Map<Post,PostResource> (post);
+            return Ok(postResources);
         }
 
         [HttpPost]
