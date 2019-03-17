@@ -17,13 +17,17 @@ namespace BlogDemo.Infrastructure.Repositories
         {
             _myContext = myContext;
         }
-        public async Task<IEnumerable<Post>> GetAllPostsAsync(PostParameters postParameters)
+        public async Task<PaginatedList<Post>> GetAllPostsAsync(PostParameters postParameters)
         {
             var query = _myContext.Posts.OrderBy(x => x.Id);
-            return await query
+
+            var count = await query.CountAsync();
+
+            var data = await query
                 .Skip(postParameters.PageIndex * postParameters.PageSize)
                 .Take(postParameters.PageSize)
                 .ToListAsync();
+            return new PaginatedList<Post>(postParameters.PageIndex, postParameters.PageSize, count, data);
         }
     
 
