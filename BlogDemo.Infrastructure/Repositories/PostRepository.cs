@@ -19,7 +19,14 @@ namespace BlogDemo.Infrastructure.Repositories
         }
         public async Task<PaginatedList<Post>> GetAllPostsAsync(PostParameters postParameters)
         {
-            var query = _myContext.Posts.OrderBy(x => x.Id);
+            var query = _myContext.Posts.AsQueryable();
+                if (!string.IsNullOrEmpty(postParameters.Title))
+                {
+                    var title = postParameters.Title.ToLowerInvariant();
+                    query = query.Where(x => x.Title.ToLowerInvariant()==title);
+                }
+
+                query=query.OrderBy(x => x.Id);
 
             var count = await query.CountAsync();
 
