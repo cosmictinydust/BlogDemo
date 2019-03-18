@@ -11,6 +11,7 @@ using BlogDemo.Infrastructure.Resource;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using BlogDemo.Infrastructure.Extensions;
 
 namespace BlogDemo.api.Controllers
 {
@@ -45,6 +46,8 @@ namespace BlogDemo.api.Controllers
             //throw new Exception("Error........!!!!!");
             var postResources = _mapper.Map<IEnumerable<Post>, IEnumerable<PostResource>>(postList);
 
+            var shapedPostResources = postResources.ToDynamicIEnumerable(postParameters.Fields);
+
             var previousPageLink = postList.HasPrevious ? CreatePostUri(postParameters, PaginationResourceUriType.PreviousPage) : null;
             var nextPageLink = postList.HasNext ? CreatePostUri(postParameters, PaginationResourceUriType.NextPage) : null;
 
@@ -63,11 +66,11 @@ namespace BlogDemo.api.Controllers
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             }));
 
-            return Ok(postResources);
+            return Ok(shapedPostResources);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id,string fields)
         {
             var post = await _postRepository.GetPostByIdAsync(id);
             if (post == null)
@@ -75,6 +78,7 @@ namespace BlogDemo.api.Controllers
                 return NotFound();
             }
             var postResources = _mapper.Map<Post, PostResource>(post);
+            var shapedPostResources = postResources.ToDynamic(fields);
             return Ok(postResources);
         }
 

@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using BlogDemo.Infrastructure.Services;
+using BlogDemo.Infrastructure.Resources;
+using Newtonsoft.Json.Serialization;
 
 namespace BlogDemo.api
 {
@@ -34,8 +37,12 @@ namespace BlogDemo.api
                 {
                     options.ReturnHttpNotAcceptable = true;
                     options.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
-                }
-                );
+                })
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                })
+                ;
             services.AddDbContext<MyContext>(options => {
                 var connectionString= Configuration.GetConnectionString("DefaultConnection");
                 options.UseSqlServer(connectionString);
@@ -51,6 +58,10 @@ namespace BlogDemo.api
 
             services.AddAutoMapper();
             services.AddTransient<IValidator<PostResource>, PostResourceValidator>();
+
+            var propertyMappingContainer = new PropertyMappingContainer();
+            propertyMappingContainer.Register<PostPropertyMapping>();
+            services.AddSingleton<IPropertyMappingContainer>(propertyMappingContainer);
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IUrlHelper>(factory =>
