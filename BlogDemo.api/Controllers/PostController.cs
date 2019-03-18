@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using BlogDemo.Infrastructure.Extensions;
+using BlogDemo.Infrastructure.Services;
 
 namespace BlogDemo.api.Controllers
 {
@@ -23,23 +24,39 @@ namespace BlogDemo.api.Controllers
         private readonly ILogger<PostController> _logger;
         private readonly IMapper _mapper;
         private readonly IUrlHelper _urlHelper;
+        private readonly ITypeHelperService _typeHelperService;
+        private readonly IPropertyMappingContainer _propertyMappingContainer;
 
         public PostController(
             IPostRepository postRepository,
             IUnitOfWork unitOfWork,
             ILogger<PostController> logger,
             IMapper mapper,
-            IUrlHelper urlHelper)
+            IUrlHelper urlHelper,
+            ITypeHelperService typeHelperService,
+            IPropertyMappingContainer propertyMappingContainer)
         {
             _postRepository = postRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
             _mapper = mapper;
             _urlHelper = urlHelper;
+            _typeHelperService = typeHelperService;
+            _propertyMappingContainer = propertyMappingContainer;
         }
         [HttpGet(Name = "GetPosts")]
         public async Task<IActionResult> Get(PostParameters postParameters)
         {
+            if (!_typeHelperService.TypeHasProperties<PostResource>(postParameters.Fields))
+            {
+                return BadRequest("Fields not exist.");
+            }
+
+            if (!_propertyMappingContainer.ValidateMappingExistsFor<PostResource, Post>(postParameters.OrderBy))
+            {
+                return BadRequest("Can't finds fields for sorting.");
+            }
+
             var postList = await _postRepository.GetAllPostsAsync(postParameters);
 
             //_logger.LogError("这里是 Get all posts...");
@@ -72,6 +89,12 @@ namespace BlogDemo.api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id,string fields)
         {
+
+            if (!_typeHelperService.TypeHasProperties<PostResource>(fields))
+            {
+                return BadRequest("Fields not exist.");
+            }
+
             var post = await _postRepository.GetPostByIdAsync(id);
             if (post == null)
             {
